@@ -13,7 +13,7 @@ import lombok.*;
 @Builder
 @Entity
 @Table(name = "studen")
-public class Student extends BaseUUIDEntity {
+public class Student extends BaseLongEntity {
 
     private String name;
 
