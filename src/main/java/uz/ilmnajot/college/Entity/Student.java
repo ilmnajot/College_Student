@@ -1,10 +1,10 @@
 package uz.ilmnajot.college.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+import uz.ilmnajot.college.Entity.component.BaseLongEntity;
+
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -12,14 +12,14 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "studen")
+@Table(name = "students")
 public class Student extends BaseLongEntity {
 
     private String name;
 
     private String email;
 
-    @OneToOne
-    private College college;
+    @ManyToMany(cascade = CascadeType.ALL)
+    private List<College> colleges;
 
 }

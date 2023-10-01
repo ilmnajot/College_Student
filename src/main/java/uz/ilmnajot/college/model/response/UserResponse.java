@@ -1,7 +1,6 @@
 package uz.ilmnajot.college.model.response;
 
 import lombok.Data;
-import uz.ilmnajot.college.enums.RoleName;
 
 import java.util.UUID;
 
@@ -18,6 +17,6 @@ public class UserResponse {
 
     private String region;
 
-    private RoleName roleName;
+    private RoleResponseList role;
 }
 

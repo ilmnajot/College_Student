@@ -11,16 +11,12 @@ import uz.ilmnajot.college.service.StudentService;
 
 import java.util.UUID;
 
+import static uz.ilmnajot.college.utils.Utils.*;
+
 @RestController
 @RequestMapping("/api/students")
 public class StudentController {
     private final StudentService studentService;
-
-    private static final String CREATE_STUDENT = "/createStudent";
-    private static final String GET_STUDENT = "/getStudent/{id}";
-    private static final String GET_ALL_STUDENT = "/all";
-    private static final String DELETE_STUDENT = "/deleteStudent/{id}";
-    private static final String UPDATE_STUDENT = "/createStudent/{id}";
 
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
@@ -41,8 +37,11 @@ public class StudentController {
                 : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
     @GetMapping(GET_ALL_STUDENT)
-    public HttpEntity<ApiResponse> getAllUser() {
-        ApiResponse apiResponse = studentService.getAll();
+    public HttpEntity<ApiResponse> getAllUser(
+            @RequestParam(name = "page", defaultValue = "1")int page,
+            @RequestParam(name = "size", defaultValue = "5") int size
+    ) {
+        ApiResponse apiResponse = studentService.getAll(page, size);
         return apiResponse != null
                 ? ResponseEntity.ok(apiResponse)
                 : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

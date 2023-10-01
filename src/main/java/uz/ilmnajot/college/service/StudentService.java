@@ -1,13 +1,16 @@
 package uz.ilmnajot.college.service;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import uz.ilmnajot.college.Entity.College;
 import uz.ilmnajot.college.Entity.Student;
-import uz.ilmnajot.college.Entity.User;
+import uz.ilmnajot.college.exception.StudentNotFoundException;
 import uz.ilmnajot.college.model.common.ApiResponse;
 import uz.ilmnajot.college.model.request.StudentRequest;
 import uz.ilmnajot.college.model.response.StudentResponse;
+import uz.ilmnajot.college.model.response.StudentResponsePage;
 import uz.ilmnajot.college.repository.StudentRepository;
 
 import java.util.ArrayList;
@@ -33,12 +36,18 @@ public class StudentService implements BaseService<StudentRequest, Long> {
         Student student = new Student();
         student.setName(studentRequest.getName());
         student.setEmail(studentRequest.getEmail());
-        student.setCollege(studentRequest.getCollege());
+        student.setColleges(List.of(
+                College
+                        .builder()
+                        .name(studentRequest.getCollege().getName())
+                        .numberOfFaculty(studentRequest.getCollege().getNumberOfFaculty())
+                        .region(studentRequest.getCollege().getRegion())
+                        .address(studentRequest.getCollege().getAddress())
+                        .build()));
         student.setDeleted(false);
         student.setBlocked(false);
         Student saved = studentRepository.save(student);
-        StudentResponse studentResponse = modelMapper.map(saved, StudentResponse.class);
-        return new ApiResponse("successfully registered", true, studentResponse);
+        return new ApiResponse("successfully registered", true,  modelMapper.map(saved, StudentResponse.class));
     }
 
     @Override
@@ -46,21 +55,22 @@ public class StudentService implements BaseService<StudentRequest, Long> {
         Optional<Student> optionalStudent = studentRepository.findById(id);
         if (optionalStudent.isPresent()) {
             Student student = optionalStudent.get();
-            StudentResponse studentResponse = modelMapper.map(student, StudentResponse.class);
-            return new ApiResponse("success", true, studentResponse);
+            return new ApiResponse("success", true, modelMapper.map(student, StudentResponse.class));
         }
         return new ApiResponse("there is no such student with id: " + id, false);
     }
 
     @Override
     public ApiResponse getAll() {
-        List<Student> studentList = studentRepository.findAll();
+        return null;
+    }
+
+    @Override
+    public ApiResponse getAll(int page, int size) {
+        Page<Student> students = studentRepository.findAll(PageRequest.of(page, size));
         List<StudentResponse> studentResponseList = new ArrayList<>();
-        for (Student student : studentList) {
-            StudentResponse studentResponse = modelMapper.map(student, StudentResponse.class);
-            studentResponseList.add(studentResponse);
-        }
-        return new ApiResponse("success", true, studentResponseList);
+        students.forEach(obj ->studentResponseList.add(modelMapper.map(students, StudentResponse.class)));
+        return new ApiResponse("success", true, new StudentResponsePage(studentResponseList, students.getTotalElements(), students.getTotalPages(), students.getNumber()));
     }
 
     @Override
@@ -82,7 +92,7 @@ public class StudentService implements BaseService<StudentRequest, Long> {
     public ApiResponse update(StudentRequest studentRequest, Long aLong) {
         Student student = updateUserById(studentRequest, aLong);
         StudentResponse studentResponse = modelMapper.map(student, StudentResponse.class);
-        return new ApiResponse("successfuly updated", true, studentResponse);
+        return new ApiResponse("successfully updated", true, studentResponse);
     }
 
     public Student updateUserById(StudentRequest request, Long id) {
@@ -92,9 +102,15 @@ public class StudentService implements BaseService<StudentRequest, Long> {
             student.setId(id);
             student.setName(request.getName());
             student.setEmail(request.getEmail());
-            student.setCollege(request.getCollege());
+            student.setColleges(List.of(College
+                    .builder()
+                            .name(request.getCollege().getName())
+                            .numberOfFaculty(request.getCollege().getNumberOfFaculty())
+                            .region(request.getCollege().getRegion())
+                            .address(request.getCollege().getAddress())
+                    .build()));
             return studentRepository.save(student);
         }
-        throw new UsernameNotFoundException("student not found");
+        throw new StudentNotFoundException("student not found");
     }
 }

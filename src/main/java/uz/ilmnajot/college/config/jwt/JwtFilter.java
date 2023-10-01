@@ -14,6 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import uz.ilmnajot.college.service.CustomUserDetailsService;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -40,7 +41,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 String usernameFromToken = jwtProvider.getUsernameFromToken(token);
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(usernameFromToken);
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, userDetails.getUsername(), userDetails.getAuthorities());
+                        userDetails, userDetails.getUsername(), new ArrayList<>());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 filterChain.doFilter(request, response);

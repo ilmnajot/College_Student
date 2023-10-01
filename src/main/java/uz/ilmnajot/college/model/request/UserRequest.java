@@ -1,6 +1,7 @@
 package uz.ilmnajot.college.model.request;
 
 import lombok.Data;
+import uz.ilmnajot.college.Entity.Role;
 
 @Data
 public class    UserRequest {
@@ -13,5 +14,8 @@ public class    UserRequest {
 
     private String region;
 
-    public String password;
+    private String password;
+
+    private Role role;
+
 }

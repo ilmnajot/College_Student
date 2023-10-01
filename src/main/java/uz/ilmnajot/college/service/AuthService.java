@@ -36,14 +36,15 @@ public class AuthService {
     }
 
     public ApiResponse register(UserRequest request) {
+
         if (userRepository.findByEmailAndDeletedFalse(request.getEmail()).isEmpty()) {
             User user = userService.saveUser(request);
-
             int nextedInt = new Random().nextInt(9999999);
             user.setEmailCode(String.valueOf(nextedInt).substring(0, 4));
             User saved = userRepository.save(user);
             mailService.sendMail(user.getUsername(), user.getEmailCode());
-            return new ApiResponse("successfully registered", true,  modelMapper.map(saved, UserResponse.class));
+            UserResponse userResponse = modelMapper.map(saved, UserResponse.class);
+            return new ApiResponse("successfully registered", true,userResponse);
         }
         return new ApiResponse("failed to register", false, "already registered user with this email " + request.getEmail());
     }

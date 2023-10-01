@@ -1,4 +1,4 @@
-package uz.ilmnajot.college.Entity;
+package uz.ilmnajot.college.Entity.component;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
+import uz.ilmnajot.college.Entity.User;
 
 import java.sql.Timestamp;
 import java.util.UUID;
